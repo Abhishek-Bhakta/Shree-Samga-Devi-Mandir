@@ -168,9 +168,38 @@ function __initGalleryLoop(){
     return;
   }
   try {
-    const res = await fetch('data/content.json', {cache:'no-store'});
-    if(!res.ok) throw new Error('Content not found');
-    const data = await res.json();
+    // FIX: Use API endpoint with proper authentication for live site
+    const API_BASE = window.API_BASE_URL || '';
+    const API_KEY = window.API_KEY || '';
+    
+    console.log('Fetching content from API:', `${API_BASE}/controllers/api/content.php`);
+    console.log('Using API Key:', API_KEY ? 'Yes (configured)' : 'No (missing)');
+    
+    const res = await fetch(`${API_BASE}/controllers/api/content.php?api_key=${API_KEY}`, {
+      cache: 'no-store',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-API-Key': API_KEY
+      }
+    });
+    
+    if(!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(`API Error ${res.status}: ${errorData.error || res.statusText}`);
+    }
+    
+    const apiResponse = await res.json();
+    
+    if (!apiResponse.success) {
+      throw new Error(`API returned error: ${apiResponse.error}`);
+    }
+    
+    const data = apiResponse.data;
+    const featuredBooks = apiResponse.featuredBooks || [];
+    
+    console.log('✅ Content loaded successfully from API');
+    console.log('Content sections:', Object.keys(data));
+    console.log('Featured books count:', featuredBooks.length);
 
     // Header/Brand
     const brandDev = document.getElementById('brandDev');
