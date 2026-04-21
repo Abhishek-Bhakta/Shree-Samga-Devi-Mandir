@@ -1,5 +1,11 @@
 // ===== API Configuration =====
-const API_BASE = window.API_BASE_URL;
+const API_BASE = window.API_BASE_URL || 'https://adminsamgadevi.infinityfree.me';
+const API_KEY = window.API_KEY || 'a1b2c3d4e5f6789012345678abcdef0123456789abcdef0123456789abcdef01';
+
+console.log('🔧 API Configuration:');
+console.log('  API_BASE:', API_BASE);
+console.log('  API_KEY:', API_KEY ? 'Configured ✅' : 'Missing ❌');
+
 let appData = {
   content: null,
   featuredBooks: [],
@@ -162,14 +168,20 @@ function __initGalleryLoop(){
 // ===== Dynamic Content Loader from API =====
 async function loadContentFromAPI() {
   try {
-    console.log('Loading content from API...');
-    const response = await fetch(`${API_BASE}/controllers/api/content.php`, {
+    // Use API PROXY to bypass CORS (Works on Vercel!)
+    const apiUrl = `${API_BASE}/api-proxy.php?action=content`;
+    console.log('📡 Fetching content from API Proxy:', apiUrl);
+    console.log('🔑 Using Proxy (No CORS issues!)');
+    
+    const response = await fetch(apiUrl, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json',
-        'X-API-Key': window.API_KEY
+        'Content-Type': 'application/json'
       }
     });
+
+    console.log('📨 Response status:', response.status);
+    console.log('📨 Response headers:', Object.fromEntries(response.headers.entries()));
 
     if (!response.ok) {
       throw new Error(`HTTP error! status: ${response.status}`);
@@ -177,15 +189,21 @@ async function loadContentFromAPI() {
 
     const result = await response.json();
     
+    // Proxy returns: { success: true, source: 'proxy', data: { ...api response... } }
     if (result.success) {
-      console.log('Content loaded successfully:', result.data);
-      appData.content = result.data;
-      appData.featuredBooks = result.featuredBooks || [];
+      // Extract actual data from proxy response
+      const apiResponse = result.data;
+      const data = apiResponse.data || apiResponse;
+      const featuredBooks = apiResponse.featuredBooks || [];
+      
+      console.log('✅ Content loaded successfully from Proxy');
+      console.log('Content sections:', Object.keys(data));
+      console.log('Featured books:', featuredBooks.length);
       
       // Update all UI elements
-      updateUIWithContent(result.data, result.featuredBooks);
+      updateUIWithContent(data, featuredBooks);
     } else {
-      throw new Error(result.error || 'Failed to load content');
+      throw new Error(result.error || 'Proxy returned error');
     }
   } catch (error) {
     console.error('Error loading content from API:', error);
