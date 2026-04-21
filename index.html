@@ -13,9 +13,9 @@
   
   <!-- API Configuration -->
   <script>
-    // API Base URL
+    // API Base URL - Update this with your actual InfinityFree backend URL
     window.API_BASE_URL = window.location.hostname === 'localhost' 
-      ? 'http://localhost/gaon-backend' 
+      ? 'http://localhost/gaon-backend%20-%20Copy%20(2)' 
       : 'https://adminsamgadevi.infinityfree.me';
     
     // API Key for authentication (Must match backend API_KEY)
@@ -24,6 +24,7 @@
     window.__SSR = false; // Static site - no server-side rendering
     
     console.log('Frontend initialized with API Base URL:', window.API_BASE_URL);
+    console.log('API Key configured:', window.API_KEY ? 'Yes' : 'No');
   </script>
 </head>
 <body>

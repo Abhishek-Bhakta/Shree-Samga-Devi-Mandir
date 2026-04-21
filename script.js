@@ -172,8 +172,8 @@ function __initGalleryLoop(){
     const API_BASE = window.API_BASE_URL || '';
     const API_KEY = window.API_KEY || '';
     
-    console.log('Fetching content from API:', `${API_BASE}/controllers/api/content.php`);
-    console.log('Using API Key:', API_KEY ? 'Yes (configured)' : 'No (missing)');
+    console.log('🔄 Fetching content from API:', `${API_BASE}/controllers/api/content.php`);
+    console.log('🔑 Using API Key:', API_KEY ? 'Yes (configured)' : 'No (missing)');
     
     const res = await fetch(`${API_BASE}/controllers/api/content.php?api_key=${API_KEY}`, {
       cache: 'no-store',
@@ -183,8 +183,21 @@ function __initGalleryLoop(){
       }
     });
     
+    console.log('📡 Response status:', res.status);
+    console.log('📡 Response OK:', res.ok);
+    
     if(!res.ok) {
-      const errorData = await res.json().catch(() => ({}));
+      const errorText = await res.text();
+      console.error('❌ API Error Response:', errorText);
+      
+      let errorData = {};
+      try {
+        errorData = JSON.parse(errorText);
+      } catch (e) {
+        // If response is not JSON, use the text as error message
+        errorData = { error: errorText };
+      }
+      
       throw new Error(`API Error ${res.status}: ${errorData.error || res.statusText}`);
     }
     
@@ -198,8 +211,8 @@ function __initGalleryLoop(){
     const featuredBooks = apiResponse.featuredBooks || [];
     
     console.log('✅ Content loaded successfully from API');
-    console.log('Content sections:', Object.keys(data));
-    console.log('Featured books count:', featuredBooks.length);
+    console.log('📊 Content sections:', Object.keys(data));
+    console.log('📚 Featured books count:', featuredBooks.length);
 
     // Header/Brand
     const brandDev = document.getElementById('brandDev');
