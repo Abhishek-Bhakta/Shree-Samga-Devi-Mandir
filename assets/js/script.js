@@ -163,10 +163,11 @@ function __initGalleryLoop(){
 async function loadContentFromAPI() {
   try {
     console.log('Loading content from API...');
-    const response = await fetch(`${API_BASE}/content.php`, {
+    const response = await fetch(`${API_BASE}/controllers/api/content.php`, {
       method: 'GET',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'X-API-Key': window.API_KEY
       }
     });
 
@@ -206,7 +207,11 @@ async function loadContentFromLocalJSON() {
     
     // For books, we'll show empty state or try API
     try {
-      const booksResponse = await fetch(`${API_BASE}/books.php`);
+      const booksResponse = await fetch(`${API_BASE}/controllers/api/books.php`, {
+        headers: {
+          'X-API-Key': window.API_KEY
+        }
+      });
       const booksResult = await booksResponse.json();
       appData.featuredBooks = booksResult.books?.slice(0, 6) || [];
     } catch (e) {
