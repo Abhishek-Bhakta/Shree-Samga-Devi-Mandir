@@ -1,5 +1,5 @@
 // ===== API Configuration =====
-const API_BASE = window.API_BASE_URL || 'http://localhost/gaon/api';
+const API_BASE = window.API_BASE_URL;
 let appData = {
   content: null,
   featuredBooks: [],
@@ -221,6 +221,20 @@ async function loadContentFromLocalJSON() {
 
 // Update UI with loaded content
 function updateUIWithContent(data, featuredBooks) {
+  // Helper function to convert backend image paths to full URLs
+  function getImageUrl(imagePath) {
+    if (!imagePath) return null;
+    
+    // If it's already a full URL, return as is
+    if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
+      return imagePath;
+    }
+    
+    // Convert relative path to full InfinityFree URL
+    // Handles: data/uploads/image.jpg, uploads/image.jpg, storage/books/cover.jpg
+    return `${API_BASE}/${imagePath}`;
+  }
+  
   // Header/Brand
   const brandDev = document.getElementById('brandDev');
   const brandEn = document.getElementById('brandEn');
@@ -229,9 +243,9 @@ function updateUIWithContent(data, featuredBooks) {
   if(brandDev && data.site?.brandDev) brandDev.textContent = data.site.brandDev;
   if(brandEn && data.site?.brandEn) brandEn.textContent = data.site.brandEn;
   if(siteLogo && data.site?.logo) {
-    siteLogo.src = data.site.logo;
+    siteLogo.src = getImageUrl(data.site.logo);
     siteLogo.style.display = 'block';
-    console.log('Site logo loaded:', data.site.logo);
+    console.log('Site logo loaded:', getImageUrl(data.site.logo));
   }
 
   // Hero
@@ -248,7 +262,7 @@ function updateUIWithContent(data, featuredBooks) {
     
     if (desktopBg) {
       hero.setAttribute('data-desktop-bg', desktopBg);
-      hero.style.backgroundImage = `url('${desktopBg}')`;
+      hero.style.backgroundImage = `url('${getImageUrl(desktopBg)}')`;
     }
     if (mobileBg) {
       hero.setAttribute('data-mobile-bg', mobileBg);
@@ -271,16 +285,16 @@ function updateUIWithContent(data, featuredBooks) {
     aboutText.textContent = truncatedText;
   }
   if(aboutImage && data.about?.image) {
-    aboutImage.src = data.about.image;
+    aboutImage.src = getImageUrl(data.about.image);
     aboutImage.style.display = 'block';
-    console.log('About image loaded:', data.about.image);
+    console.log('About image loaded:', getImageUrl(data.about.image));
   } else {
     console.warn('About image not found in data');
   }
   if(aboutModalTitle && data.about?.title) aboutModalTitle.textContent = data.about.title;
   if(aboutModalContent && data.about?.text) aboutModalContent.innerHTML = data.about.text.replace(/\n/g, '<br>');
   if(aboutModalImage && data.about?.image) {
-    aboutModalImage.src = data.about.image;
+    aboutModalImage.src = getImageUrl(data.about.image);
     aboutModalImage.style.display = 'block';
   }
 
@@ -377,11 +391,12 @@ function updateUIWithContent(data, featuredBooks) {
     if (validImages.length > 0) {
       const items = [...validImages, ...validImages]; // duplicate for loop effect
       items.forEach(img => {
+        const imageUrl = getImageUrl(img.image);
         const a = document.createElement('a');
-        a.href = img.image; 
+        a.href = imageUrl; 
         a.className='gallery-slider__item'; 
         a.setAttribute('data-lightbox','');
-        a.innerHTML = `<img src="${img.image}" alt="${img.alt||''}">`;
+        a.innerHTML = `<img src="${imageUrl}" alt="${img.alt||''}">`;
         galleryTrack.appendChild(a);
       });
       __initGalleryLoop();
