@@ -13,18 +13,13 @@
   
   <!-- API Configuration -->
   <script>
-    // API Base URL - Update this with your actual InfinityFree backend URL
-    window.API_BASE_URL = window.location.hostname === 'localhost' 
-      ? 'http://localhost/gaon-backend%20-%20Copy%20(2)' 
-      : 'https://adminsamgadevi.infinityfree.me';
-    
-    // API Key for authentication (Must match backend API_KEY)
+    // DIRECT API URL - InfinityFree Backend
+    window.API_BASE_URL = 'https://adminsamgadevi.infinityfree.me';
     window.API_KEY = 'a1b2c3d4e5f6789012345678abcdef0123456789abcdef0123456789abcdef01';
+    window.__SSR = false;
     
-    window.__SSR = false; // Static site - no server-side rendering
-    
-    console.log('Frontend initialized with API Base URL:', window.API_BASE_URL);
-    console.log('API Key configured:', window.API_KEY ? 'Yes' : 'No');
+    console.log('🎯 API URL:', window.API_BASE_URL);
+    console.log('🔑 API Key:', window.API_KEY ? 'Configured' : 'Missing');
   </script>
 </head>
 <body>

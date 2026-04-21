@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API Connection Test</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+        h1 { color: #333; margin-bottom: 20px; }
+        .status {
+            padding: 15px;
+            border-radius: 5px;
+            margin: 10px 0;
+            font-weight: bold;
+        }
+        .success { background: #d4edda; border-left: 4px solid #28a745; color: #155724; }
+        .error { background: #f8d7da; border-left: 4px solid #dc3545; color: #721c24; }
+        .loading { background: #fff3cd; border-left: 4px solid #ffc107; color: #856404; }
+        pre {
+            background: #f4f4f4;
+            padding: 15px;
+            border-radius: 5px;
+            overflow-x: auto;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        .btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px 10px 0;
+        }
+        .btn:hover { background: #764ba2; }
+        .image-test {
+            margin: 20px 0;
+            padding: 15px;
+            background: #f9f9f9;
+            border-radius: 5px;
+        }
+        .image-test img {
+            max-width: 100%;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 API Connection Test</h1>
+        <p>Testing direct connection to InfinityFree backend API</p>
+
+        <div id="status" class="status loading">
+            ⏳ Testing API connection...
+        </div>
+
+        <button class="btn" onclick="testAPI()">🔄 Test Again</button>
+        <button class="btn" onclick="testImage()">🖼️ Test Image Load</button>
+
+        <div id="result"></div>
+        <div id="imageTest" class="image-test" style="display:none;"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://adminsamgadevi.infinityfree.me/controllers/api/content.php';
+        const API_KEY = 'a1b2c3d4e5f6789012345678abcdef0123456789abcdef0123456789abcdef01';
+
+        async function testAPI() {
+            const statusDiv = document.getElementById('status');
+            const resultDiv = document.getElementById('result');
+            
+            statusDiv.className = 'status loading';
+            statusDiv.innerHTML = '⏳ Connecting to API...';
+            resultDiv.innerHTML = '';
+
+            try {
+                console.log('Testing API:', API_URL);
+                
+                const startTime = Date.now();
+                const response = await fetch(`${API_URL}?api_key=${API_KEY}`);
+                const endTime = Date.now();
+                
+                console.log('Response Status:', response.status);
+                console.log('Response OK:', response.ok);
+                console.log('Response Time:', endTime - startTime, 'ms');
+
+                const data = await response.json();
+                console.log('Response Data:', data);
+
+                if (data.success) {
+                    statusDiv.className = 'status success';
+                    statusDiv.innerHTML = `✅ SUCCESS! API connected in ${endTime - startTime}ms`;
+                    
+                    resultDiv.innerHTML = `
+                        <h3>📊 API Response Details:</h3>
+                        <pre>
+Status: ${response.status} OK
+Response Time: ${endTime - startTime}ms
+Success: ${data.success}
+Sections: ${Object.keys(data.data || {}).join(', ')}
+Featured Books: ${(data.featuredBooks || []).length}
+Timestamp: ${new Date(data.timestamp * 1000).toLocaleString()}
+                        </pre>
+                        
+                        <h3>📄 Available Content:</h3>
+                        <pre>${JSON.stringify(Object.keys(data.data), null, 2)}</pre>
+                        
+                        ${data.data.site ? `
+                        <h3>🏛️ Site Info:</h3>
+                        <pre>
+Brand (Dev): ${data.data.site.brandDev || 'N/A'}
+Brand (En): ${data.data.site.brandEn || 'N/A'}
+Hero Title: ${data.data.site.hero?.title || 'N/A'}
+Hero Image: ${data.data.site.hero?.backgroundImage || 'N/A'}
+                        </pre>
+                        ` : ''}
+                        
+                        ${data.data.events ? `
+                        <h3>📅 Events: ${data.data.events.length}</h3>
+                        <pre>${JSON.stringify(data.data.events.slice(0, 2), null, 2)}</pre>
+                        ` : ''}
+                        
+                        ${data.data.gallery ? `
+                        <h3>🖼️ Gallery: ${data.data.gallery.length} images</h3>
+                        <p>First image: ${data.data.gallery[0]?.small || data.data.gallery[0]?.image || 'N/A'}</p>
+                        ` : ''}
+                    `;
+                } else {
+                    statusDiv.className = 'status error';
+                    statusDiv.innerHTML = `❌ API Error: ${data.error}`;
+                    resultDiv.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                statusDiv.className = 'status error';
+                statusDiv.innerHTML = `❌ Connection Failed: ${error.message}`;
+                resultDiv.innerHTML = `
+                    <h3>❌ Error Details:</h3>
+                    <pre>
+Error: ${error.message}
+URL: ${API_URL}
+API Key: ${API_KEY ? 'Configured' : 'Missing'}
+
+Possible Issues:
+1. CORS policy blocking request
+2. Backend not accessible
+3. API key mismatch
+4. Network connectivity issue
+
+Solution:
+- Check browser console (F12) for CORS errors
+- Verify backend URL is correct
+- Ensure API key matches backend config
+                    </pre>
+                `;
+            }
+        }
+
+        async function testImage() {
+            const imageTestDiv = document.getElementById('imageTest');
+            imageTestDiv.style.display = 'block';
+            imageTestDiv.innerHTML = '<p>⏳ Testing image loading...</p>';
+
+            try {
+                // First get API data to find an image URL
+                const response = await fetch(`${API_URL}?api_key=${API_KEY}`);
+                const data = await response.json();
+
+                if (data.success && data.data.site?.hero?.backgroundImage) {
+                    const imageUrl = data.data.site.hero.backgroundImage;
+                    
+                    imageTestDiv.innerHTML = `
+                        <h3>🖼️ Image Loading Test:</h3>
+                        <p><strong>Image URL:</strong> ${imageUrl}</p>
+                        <img src="${imageUrl}" 
+                             alt="Test Image" 
+                             onload="this.parentElement.innerHTML += '<p style=\\'color:green\\'>✅ Image loaded successfully!</p>'"
+                             onerror="this.parentElement.innerHTML += '<p style=\\'color:red\\'>❌ Image failed to load</p>'">
+                        <p><em>If image shows above, images are working correctly!</em></p>
+                    `;
+                } else {
+                    imageTestDiv.innerHTML = '<p>⚠️ No image URL found in API response</p>';
+                }
+            } catch (error) {
+                imageTestDiv.innerHTML = `<p>❌ Error: ${error.message}</p>`;
+            }
+        }
+
+        // Auto-test on page load
+        window.addEventListener('load', () => {
+            setTimeout(testAPI, 500);
+        });
+    </script>
+</body>
+</html>
