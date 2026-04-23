@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Samga Devi - Demo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f5f5f5;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c5282;
+        }
+
+        .logo img {
+            height: 40px;
+            margin-right: 10px;
+        }
+
+        /* Hero Section */
+        .hero {
+            position: relative;
+            min-height: 600px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            color: white;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            padding: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            margin-bottom: 2rem;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 12px 30px;
+            background: #2c5282;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background 0.3s;
+        }
+
+        .btn:hover {
+            background: #2b6cb0;
+        }
+
+        /* About Section */
+        .about {
+            padding: 4rem 2rem;
+            background: white;
+        }
+
+        .about-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+            align-items: center;
+        }
+
+        .about-image img {
+            width: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .about-text h2 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            color: #2c5282;
+        }
+
+        .about-text p {
+            margin-bottom: 1rem;
+            line-height: 1.8;
+        }
+
+        /* Featured Books */
+        .featured-books {
+            padding: 4rem 2rem;
+            background: #f9fafb;
+        }
+
+        .section-title {
+            text-align: center;
+            font-size: 2rem;
+            margin-bottom: 3rem;
+            color: #2c5282;
+        }
+
+        .books-grid {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+
+        .book-card {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .book-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .book-cover {
+            width: 100%;
+            height: 300px;
+            object-fit: cover;
+        }
+
+        .book-info {
+            padding: 1.5rem;
+        }
+
+        .book-info h3 {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+            color: #2d3748;
+        }
+
+        .book-info .author {
+            color: #718096;
+            margin-bottom: 0.5rem;
+        }
+
+        .book-info .rating {
+            color: #f59e0b;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 4rem;
+            font-size: 1.2rem;
+            color: #718096;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #2c5282;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Error State */
+        .error {
+            text-align: center;
+            padding: 2rem;
+            background: #fed7d7;
+            color: #c53030;
+            border-radius: 5px;
+            margin: 2rem auto;
+            max-width: 600px;
+        }
+
+        /* Footer */
+        .footer {
+            background: #2d3748;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .about-content {
+                grid-template-columns: 1fr;
+            }
+
+            .books-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="logo" id="logo">
+                <span>Loading...</span>
+            </div>
+            <nav>
+                <a href="#" style="text-decoration: none; color: #2c5282; margin-left: 2rem;">Home</a>
+                <a href="#about" style="text-decoration: none; color: #2c5282; margin-left: 2rem;">About</a>
+                <a href="#books" style="text-decoration: none; color: #2c5282; margin-left: 2rem;">Books</a>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero" id="hero">
+        <div class="loading">
+            <div class="spinner"></div>
+            <p>Loading content...</p>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section class="about" id="about">
+        <div class="about-content">
+            <div class="about-image" id="about-image">
+                <div class="loading">
+                    <div class="spinner"></div>
+                </div>
+            </div>
+            <div class="about-text" id="about-text">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading about section...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Featured Books -->
+    <section class="featured-books" id="books">
+        <h2 class="section-title">Featured Books</h2>
+        <div class="books-grid" id="books-grid">
+            <div class="loading" style="grid-column: 1 / -1;">
+                <div class="spinner"></div>
+                <p>Loading books...</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>&copy; 2026 Samga Devi. All rights reserved.</p>
+    </footer>
+
+    <script>
+        // API Configuration
+        const API_URL = 'https://adminsamgadevi.infinityfree.me/api.php';
+        const API_KEY = 'a7f3e9c2b8d4f1a6e5c9b7d3f8a2e6c4b9d7f1a5e3c8b6d2f9a4e7c1b5d8f3a6'; // API key from core/config.php
+
+        // Fetch content from API
+        async function fetchContent() {
+            try {
+                const response = await fetch(`${API_URL}?action=content`, {
+                    method: 'GET',
+                    headers: {
+                        'X-API-Key': API_KEY,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    renderContent(data.data, data.featuredBooks);
+                } else {
+                    throw new Error(data.error || 'Failed to fetch content');
+                }
+            } catch (error) {
+                console.error('Error fetching content:', error);
+                showError('Failed to load content. Please try again later.');
+            }
+        }
+
+        // Render content to the page
+        function renderContent(content, featuredBooks) {
+            // Update logo
+            const logoElement = document.getElementById('logo');
+            if (content.site && content.site.logo) {
+                logoElement.innerHTML = `<img src="${content.site.logo}" alt="Logo"> <span>${content.site.name || 'Samga Devi'}</span>`;
+            } else {
+                logoElement.innerHTML = `<span>${content.site?.name || 'Samga Devi'}</span>`;
+            }
+
+            // Update hero section
+            const heroSection = document.getElementById('hero');
+            if (content.site && content.site.hero) {
+                const hero = content.site.hero;
+                const backgroundImage = window.innerWidth <= 768 && hero.mobileBackgroundImage 
+                    ? hero.mobileBackgroundImage 
+                    : hero.backgroundImage;
+
+                if (backgroundImage) {
+                    heroSection.style.backgroundImage = `url('${backgroundImage}')`;
+                }
+
+                heroSection.innerHTML = `
+                    <div class="hero-content">
+                        <h1>${hero.title || 'Welcome to Samga Devi'}</h1>
+                        <p>${hero.subtitle || 'Discover amazing books and stories'}</p>
+                        ${hero.ctaText ? `<a href="${hero.ctaLink || '#'}" class="btn">${hero.ctaText}</a>` : ''}
+                    </div>
+                `;
+            }
+
+            // Update about section
+            if (content.about) {
+                const aboutImage = document.getElementById('about-image');
+                const aboutText = document.getElementById('about-text');
+
+                if (content.about.image) {
+                    aboutImage.innerHTML = `<img src="${content.about.image}" alt="About">`;
+                }
+
+                aboutText.innerHTML = `
+                    <h2>${content.about.title || 'About Us'}</h2>
+                    <p>${content.about.description || ''}</p>
+                `;
+            }
+
+            // Update featured books
+            if (featuredBooks && featuredBooks.length > 0) {
+                const booksGrid = document.getElementById('books-grid');
+                booksGrid.innerHTML = featuredBooks.map(book => `
+                    <div class="book-card">
+                        <img src="${book.cover_path}" alt="${book.title}" class="book-cover">
+                        <div class="book-info">
+                            <h3>${book.title}</h3>
+                            <p class="author">by ${book.author}</p>
+                            ${book.avg_rating ? `<p class="rating">⭐ ${book.avg_rating} (${book.review_count} reviews)</p>` : ''}
+                            <p class="categories">${book.categories || ''}</p>
+                        </div>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // Show error message
+        function showError(message) {
+            const heroSection = document.getElementById('hero');
+            heroSection.innerHTML = `
+                <div class="error">
+                    <h2>Error Loading Content</h2>
+                    <p>${message}</p>
+                </div>
+            `;
+        }
+
+        // Load content when page loads
+        document.addEventListener('DOMContentLoaded', fetchContent);
+    </script>
+</body>
+</html>
