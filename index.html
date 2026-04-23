@@ -20,6 +20,28 @@
 </head>
 <body>
   <div class="page-wrapper">
+    <!-- Error Banner (shown when API fails) -->
+    <div id="errorBanner" class="error-banner" style="display: none;" role="alert" aria-live="assertive">
+      <div class="error-banner__container">
+        <div class="error-banner__icon">
+          <i class="fas fa-exclamation-triangle"></i>
+        </div>
+        <div class="error-banner__content">
+          <h3 class="error-banner__title">Connection Error</h3>
+          <p class="error-banner__message" id="errorMessage">Unable to load content</p>
+          <p class="error-banner__details" id="errorDetails"></p>
+        </div>
+        <button class="error-banner__close" id="errorBannerClose" aria-label="Close error message">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
+      <div class="error-banner__actions">
+        <button class="btn btn--outline btn--sm" id="errorRetryBtn">
+          <i class="fas fa-redo"></i> Retry
+        </button>
+      </div>
+    </div>
+
     <!-- Header will be loaded dynamically or included via JS -->
     <header class="site-header">
       <div class="container">

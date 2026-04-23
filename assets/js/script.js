@@ -7,6 +7,59 @@ let appData = {
   user: null
 };
 
+// ===== Error Display Functions =====
+function showErrorBanner(title, message, details = '') {
+  const errorBanner = document.getElementById('errorBanner');
+  const errorMessage = document.getElementById('errorMessage');
+  const errorDetails = document.getElementById('errorDetails');
+  
+  if (!errorBanner) return;
+  
+  // Update error content
+  document.querySelector('.error-banner__title').textContent = title;
+  if (errorMessage) errorMessage.textContent = message;
+  if (errorDetails && details) {
+    errorDetails.textContent = details;
+    errorDetails.style.display = 'block';
+  } else if (errorDetails) {
+    errorDetails.style.display = 'none';
+  }
+  
+  // Show banner
+  errorBanner.style.display = 'block';
+  
+  // Scroll to top to show error
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+  
+  console.error(`[ERROR] ${title}: ${message}`, details);
+}
+
+function hideErrorBanner() {
+  const errorBanner = document.getElementById('errorBanner');
+  if (errorBanner) {
+    errorBanner.style.display = 'none';
+  }
+}
+
+// Error banner close button
+document.addEventListener('DOMContentLoaded', function() {
+  const closeBtn = document.getElementById('errorBannerClose');
+  const retryBtn = document.getElementById('errorRetryBtn');
+  
+  if (closeBtn) {
+    closeBtn.addEventListener('click', function() {
+      hideErrorBanner();
+    });
+  }
+  
+  if (retryBtn) {
+    retryBtn.addEventListener('click', function() {
+      hideErrorBanner();
+      loadContentFromAPI();
+    });
+  }
+});
+
 // ===== Mandir Open-Close & Next Arti =====
 (function(){
   function formatTime12Hr(hours, minutes) {
@@ -189,6 +242,9 @@ async function loadContentFromAPI() {
       appData.content = result.data;
       appData.featuredBooks = result.featuredBooks || [];
       
+      // Hide error banner if it was showing
+      hideErrorBanner();
+      
       // Update all UI elements
       updateUIWithContent(result.data, result.featuredBooks);
     } else {
@@ -196,6 +252,29 @@ async function loadContentFromAPI() {
     }
   } catch (error) {
     console.error('Error loading content from API:', error);
+    
+    // Show error banner with real error message
+    let errorTitle = 'Connection Error';
+    let errorMessage = 'Unable to load content from server';
+    let errorDetails = error.message;
+    
+    // Provide more specific error messages
+    if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+      errorTitle = 'Network Error';
+      errorMessage = 'Cannot connect to the server. Please check your internet connection.';
+    } else if (error.message.includes('HTTP error! status: 404')) {
+      errorTitle = 'API Not Found';
+      errorMessage = 'The API endpoint could not be found. Please check the server configuration.';
+    } else if (error.message.includes('HTTP error! status: 401') || error.message.includes('HTTP error! status: 403')) {
+      errorTitle = 'Authentication Error';
+      errorMessage = 'Access denied. Please check API key configuration.';
+    } else if (error.message.includes('HTTP error! status: 500')) {
+      errorTitle = 'Server Error';
+      errorMessage = 'The server encountered an error. Please try again later.';
+    }
+    
+    showErrorBanner(errorTitle, errorMessage, errorDetails);
+    
     // Fallback: Try loading from local JSON file
     console.log('Falling back to local JSON file...');
     loadContentFromLocalJSON();
@@ -212,6 +291,9 @@ async function loadContentFromLocalJSON() {
     console.log('Loaded from local JSON:', data);
     appData.content = data;
     
+    // Hide error banner since we have fallback data
+    hideErrorBanner();
+    
     // For books, we'll try API
     try {
       const booksResponse = await fetch(`${API_BASE}/controllers/api/books.php`, {
@@ -223,12 +305,20 @@ async function loadContentFromLocalJSON() {
       const booksResult = await booksResponse.json();
       appData.featuredBooks = booksResult.books?.slice(0, 6) || [];
     } catch (e) {
+      console.warn('Failed to load books from API:', e.message);
       appData.featuredBooks = [];
     }
     
     updateUIWithContent(data, appData.featuredBooks);
   } catch (e) {
     console.error('Failed to load from local JSON:', e);
+    
+    // Show error if both API and local JSON fail
+    showErrorBanner(
+      'Content Load Failed',
+      'Unable to load content from both server and local files.',
+      e.message
+    );
   }
 }
 

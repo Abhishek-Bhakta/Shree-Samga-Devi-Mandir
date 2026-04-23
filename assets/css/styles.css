@@ -1238,3 +1238,153 @@ a { color: inherit; text-decoration: none; }
     }
 }
 
+/* ===== Error Banner Styles ===== */
+.error-banner {
+    background: linear-gradient(135deg, #fff5f5 0%, #ffe8e8 100%);
+    border-bottom: 3px solid #dc3545;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.15);
+    padding: 20px 0;
+    position: sticky;
+    top: 60px;
+    z-index: 1003;
+    animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.error-banner__container {
+    width: min(1200px, 92%);
+    margin: 0 auto;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+}
+
+.error-banner__icon {
+    flex-shrink: 0;
+    width: 48px;
+    height: 48px;
+    background: #dc3545;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 24px;
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.7);
+    }
+    50% {
+        box-shadow: 0 0 0 10px rgba(220, 53, 69, 0);
+    }
+}
+
+.error-banner__content {
+    flex: 1;
+    min-width: 0;
+}
+
+.error-banner__title {
+    margin: 0 0 8px 0;
+    color: #dc3545;
+    font-size: 18px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+}
+
+.error-banner__message {
+    margin: 0 0 8px 0;
+    color: #495057;
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.error-banner__details {
+    margin: 0;
+    color: #6c757d;
+    font-size: 12px;
+    font-family: monospace;
+    background: rgba(255, 255, 255, 0.7);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border-left: 3px solid #dc3545;
+    word-break: break-all;
+    max-height: 60px;
+    overflow-y: auto;
+}
+
+.error-banner__close {
+    flex-shrink: 0;
+    background: transparent;
+    border: none;
+    color: #6c757d;
+    font-size: 20px;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 4px;
+    transition: all 0.2s;
+}
+
+.error-banner__close:hover {
+    background: rgba(220, 53, 69, 0.1);
+    color: #dc3545;
+}
+
+.error-banner__actions {
+    width: min(1200px, 92%);
+    margin: 12px auto 0;
+    padding-top: 12px;
+    border-top: 1px solid rgba(220, 53, 69, 0.2);
+    display: flex;
+    gap: 10px;
+}
+
+.btn--sm {
+    padding: 6px 16px;
+    font-size: 13px;
+}
+
+/* Responsive Error Banner */
+@media (max-width: 768px) {
+    .error-banner {
+        padding: 16px 0;
+        top: 50px;
+    }
+    
+    .error-banner__container {
+        flex-wrap: wrap;
+    }
+    
+    .error-banner__icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .error-banner__title {
+        font-size: 16px;
+    }
+    
+    .error-banner__message {
+        font-size: 13px;
+    }
+    
+    .error-banner__details {
+        font-size: 11px;
+        max-height: 50px;
+    }
+}
+
