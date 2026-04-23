@@ -1,0 +1,9 @@
+# Ignore diagnostic/test files
+*.html
+!index.html
+
+# Ignore documentation
+*.md
+
+# Ignore backend files
+config.php
